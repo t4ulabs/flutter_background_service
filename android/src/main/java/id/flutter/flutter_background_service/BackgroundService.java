@@ -39,6 +39,7 @@ import io.flutter.view.FlutterMain;
 
 public class BackgroundService extends Service implements MethodChannel.MethodCallHandler {
     private static final String TAG = "BackgroundService";
+    private static final String TAG_SendData = "Tag sending data error:";
     private FlutterEngine backgroundEngine;
     private MethodChannel methodChannel;
     private DartExecutor.DartCallback dartCallback;
@@ -298,7 +299,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                 return;
             }
         } catch (JSONException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG_SendData, e.getMessage());
             e.printStackTrace();
         }
 

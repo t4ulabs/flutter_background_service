@@ -5,6 +5,12 @@ import BackgroundTasks
 
 public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDelegate, FlutterPlugin  {
     
+    private static var flutterPluginRegistrantCallback: FlutterPluginRegistrantCallback?
+    
+    public static func setPluginRegistrantCallback(_ callback: @escaping FlutterPluginRegistrantCallback) {
+        flutterPluginRegistrantCallback = callback
+    }
+    
     var backgroundEngine: FlutterEngine? = nil
     var mainChannel: FlutterMethodChannel? = nil
     var backgroundChannel: FlutterMethodChannel? = nil
@@ -183,6 +189,12 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
             let uri = callbackHandle?.callbackLibraryPath
             
             let backgroundEngine = FlutterEngine(name: "FlutterService", project: nil, allowHeadlessExecution: true)
+            
+            //added to correct ios error
+            backgroundEngine.run(withEntrypoint: callbackName, libraryURI: uri)
+            SwiftFlutterBackgroundServicePlugin.flutterPluginRegistrantCallback?(backgroundEngine)
+            ///
+            
             let isRunning = backgroundEngine.run(withEntrypoint: callbackName, libraryURI: uri)
             if (isRunning){
                 let binaryMessenger = backgroundEngine.binaryMessenger
