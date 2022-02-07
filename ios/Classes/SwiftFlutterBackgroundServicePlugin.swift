@@ -73,6 +73,9 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
             
             let backgroundEngine = FlutterEngine(name: "FlutterBackgroundFetch", project: nil, allowHeadlessExecution: true)
             let isRunning = backgroundEngine.run(withEntrypoint: callbackName, libraryURI: uri)
+            //
+            SwiftFlutterBackgroundServicePlugin.flutterPluginRegistrantCallback?(backgroundEngine)
+            //
             if (isRunning){
                 let binaryMessenger = backgroundEngine.binaryMessenger
                 let backgroundChannel = FlutterMethodChannel(name: "id.flutter/background_service_bg", binaryMessenger: binaryMessenger, codec: FlutterJSONMethodCodec())
