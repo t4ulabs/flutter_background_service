@@ -16,6 +16,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -69,16 +70,16 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
     public static void enqueue(Context context) {
         Intent intent = new Intent(context, WatchdogReceiver.class);
-//        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-//            PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-//            AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
-//            return;
-//        }
-//
-//        PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
-//        AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
+            return;
+        }
+
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
     }
 
     public void setAutoStartOnBootMode(boolean value) {
@@ -114,8 +115,8 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     @Override
     public void onCreate() {
         super.onCreate();
-        //createNotificationChannel();
-        //notificationContent = "Preparing";
+        createNotificationChannel();
+        notificationContent = "Preparing";
         updateNotificationInfo();
     }
 
@@ -151,31 +152,35 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+            notificationManager.cancelAll();
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     protected void updateNotificationInfo() {
         if (isForegroundService(this)) {
-//
-//            String packageName = getApplicationContext().getPackageName();
-//            Intent i = getPackageManager().getLaunchIntentForPackage(packageName);
 
-//            PendingIntent pi;
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-//                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
-//            } else {
-//                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
-//            }
+            String packageName = getApplicationContext().getPackageName();
+            Intent i = getPackageManager().getLaunchIntentForPackage(packageName);
 
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT");
-//                    .setSmallIcon(R.drawable.ic_bg_service_small)
-//                    .setAutoCancel(true)
-//                    .setOngoing(true)
-//                    .setContentTitle(notificationTitle)
-//                    .setContentText(notificationContent)
-//                    .setContentIntent(pi);
+            PendingIntent pi;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
+            } else {
+                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
+            }
+
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT")
+                    .setSmallIcon(R.drawable.ic_bg_service_small)
+                    .setAutoCancel(true)
+                    .setOngoing(true)
+                    .setContentTitle(notificationTitle)
+                    .setContentText(notificationContent)
+                    .setContentIntent(pi);
 
             startForeground(99778, mBuilder.build());
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.cancelAll();
         }
     }
 
@@ -218,7 +223,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             dartCallback = new DartExecutor.DartCallback(getAssets(), FlutterInjector.instance().flutterLoader().findAppBundlePath(), callback);
             backgroundEngine.getDartExecutor().executeDartCallback(dartCallback);
         } catch (UnsatisfiedLinkError e) {
-            //notificationContent = "Error " +e.getMessage();
+            notificationContent = "Error " +e.getMessage();
             updateNotificationInfo();
 
             Log.w(TAG, "UnsatisfiedLinkError: After a reboot this may happen for a short period and it is ok to ignore then!" + e.getMessage());
