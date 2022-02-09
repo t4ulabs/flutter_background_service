@@ -69,16 +69,16 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
     public static void enqueue(Context context) {
         Intent intent = new Intent(context, WatchdogReceiver.class);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-            AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
-            return;
-        }
-
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
+//        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+//            PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+//            AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
+//            return;
+//        }
+//
+//        PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
+//        AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
     }
 
     public void setAutoStartOnBootMode(boolean value) {
@@ -114,9 +114,9 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     @Override
     public void onCreate() {
         super.onCreate();
-        createNotificationChannel();
-        notificationContent = "Preparing";
-        updateNotificationInfo();
+        //createNotificationChannel();
+        //notificationContent = "Preparing";
+        //updateNotificationInfo();
     }
 
     @Override
@@ -196,7 +196,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             Log.d(TAG, "runService");
             if (isRunning.get() || (backgroundEngine != null && !backgroundEngine.getDartExecutor().isExecutingDart()))
                 return;
-            updateNotificationInfo();
+            //updateNotificationInfo();
 
             SharedPreferences pref = getSharedPreferences("id.flutter.background_service", MODE_PRIVATE);
             long callbackHandle = pref.getLong("callback_handle", 0);
@@ -218,8 +218,8 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             dartCallback = new DartExecutor.DartCallback(getAssets(), FlutterInjector.instance().flutterLoader().findAppBundlePath(), callback);
             backgroundEngine.getDartExecutor().executeDartCallback(dartCallback);
         } catch (UnsatisfiedLinkError e) {
-            notificationContent = "Error " +e.getMessage();
-            updateNotificationInfo();
+            //notificationContent = "Error " +e.getMessage();
+            //updateNotificationInfo();
 
             Log.w(TAG, "UnsatisfiedLinkError: After a reboot this may happen for a short period and it is ok to ignore then!" + e.getMessage());
         }
@@ -245,7 +245,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                 if (arg.has("title")) {
                     notificationTitle = arg.getString("title");
                     notificationContent = arg.getString("content");
-                    updateNotificationInfo();
+                   // updateNotificationInfo();
                     result.success(true);
                     return;
                 }
@@ -264,7 +264,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                 boolean value = arg.getBoolean("value");
                 setForegroundServiceMode(value);
                 if (value) {
-                    updateNotificationInfo();
+                   // updateNotificationInfo();
                 } else {
                     stopForeground(true);
                 }
