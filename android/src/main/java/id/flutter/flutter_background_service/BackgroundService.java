@@ -80,6 +80,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
         PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
+        manager.cancel(pIntent);
     }
 
     public void setAutoStartOnBootMode(boolean value) {
@@ -112,6 +113,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
         return pref.getBoolean("is_manually_stopped", false);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate() {
         super.onCreate();
