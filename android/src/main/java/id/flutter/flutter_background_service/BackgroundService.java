@@ -45,8 +45,8 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     private DartExecutor.DartCallback dartCallback;
     private boolean isManuallyStopped = false;
 
-    String notificationTitle = "Background Service";
-    String notificationContent = "Running";
+    String notificationTitle = "tested4you";
+    String notificationContent = "Uploading videos";
     private static final String LOCK_NAME = BackgroundService.class.getName()
             + ".Lock";
     private static volatile WakeLock lockStatic = null; // notice static
@@ -175,7 +175,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                     .setContentText(notificationContent)
                     .setContentIntent(pi);
 
-            //startForeground(99778, mBuilder.build());
+            startForeground(99778, mBuilder.build());
         }
     }
 
