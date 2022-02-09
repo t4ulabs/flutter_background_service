@@ -116,7 +116,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
         super.onCreate();
         //createNotificationChannel();
         //notificationContent = "Preparing";
-        //updateNotificationInfo();
+        updateNotificationInfo();
     }
 
     @Override
@@ -156,24 +156,24 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
     protected void updateNotificationInfo() {
         if (isForegroundService(this)) {
+//
+//            String packageName = getApplicationContext().getPackageName();
+//            Intent i = getPackageManager().getLaunchIntentForPackage(packageName);
 
-            String packageName = getApplicationContext().getPackageName();
-            Intent i = getPackageManager().getLaunchIntentForPackage(packageName);
+//            PendingIntent pi;
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+//                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
+//            } else {
+//                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
+//            }
 
-            PendingIntent pi;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
-            } else {
-                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
-            }
-
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT")
-                    .setSmallIcon(R.drawable.ic_bg_service_small)
-                    .setAutoCancel(true)
-                    .setOngoing(true)
-                    .setContentTitle(notificationTitle)
-                    .setContentText(notificationContent)
-                    .setContentIntent(pi);
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT");
+//                    .setSmallIcon(R.drawable.ic_bg_service_small)
+//                    .setAutoCancel(true)
+//                    .setOngoing(true)
+//                    .setContentTitle(notificationTitle)
+//                    .setContentText(notificationContent)
+//                    .setContentIntent(pi);
 
             startForeground(99778, mBuilder.build());
         }
@@ -196,7 +196,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             Log.d(TAG, "runService");
             if (isRunning.get() || (backgroundEngine != null && !backgroundEngine.getDartExecutor().isExecutingDart()))
                 return;
-            //updateNotificationInfo();
+            updateNotificationInfo();
 
             SharedPreferences pref = getSharedPreferences("id.flutter.background_service", MODE_PRIVATE);
             long callbackHandle = pref.getLong("callback_handle", 0);
@@ -219,7 +219,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             backgroundEngine.getDartExecutor().executeDartCallback(dartCallback);
         } catch (UnsatisfiedLinkError e) {
             //notificationContent = "Error " +e.getMessage();
-            //updateNotificationInfo();
+            updateNotificationInfo();
 
             Log.w(TAG, "UnsatisfiedLinkError: After a reboot this may happen for a short period and it is ok to ignore then!" + e.getMessage());
         }
@@ -245,7 +245,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                 if (arg.has("title")) {
                     notificationTitle = arg.getString("title");
                     notificationContent = arg.getString("content");
-                   // updateNotificationInfo();
+                    updateNotificationInfo();
                     result.success(true);
                     return;
                 }
@@ -264,7 +264,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                 boolean value = arg.getBoolean("value");
                 setForegroundServiceMode(value);
                 if (value) {
-                   // updateNotificationInfo();
+                    updateNotificationInfo();
                 } else {
                     stopForeground(true);
                 }
