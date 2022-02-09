@@ -16,7 +16,6 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -73,16 +72,13 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_CANCEL_CURRENT);
-            //AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
-            manager.cancel(pIntent);
+            PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
             return;
         }
 
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent,  PendingIntent.FLAG_CANCEL_CURRENT);
-        //AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
-
-        manager.cancel(pIntent);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, 111, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManagerCompat.setAndAllowWhileIdle(manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pIntent);
     }
 
     public void setAutoStartOnBootMode(boolean value) {
@@ -115,7 +111,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
         return pref.getBoolean("is_manually_stopped", false);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate() {
         super.onCreate();
@@ -156,11 +151,9 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
-            notificationManager.cancelAll();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     protected void updateNotificationInfo() {
         if (isForegroundService(this)) {
 
@@ -170,7 +163,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             PendingIntent pi;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
                 pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
-                //notificationManager.cancel(99778);
             } else {
                 pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
             }
@@ -183,9 +175,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                     .setContentText(notificationContent)
                     .setContentIntent(pi);
 
-            startForeground(99778, mBuilder.build());
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.cancel(99778);
+            //startForeground(99778, mBuilder.build());
         }
     }
 
