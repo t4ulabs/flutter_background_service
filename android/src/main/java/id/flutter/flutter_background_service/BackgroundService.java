@@ -114,8 +114,8 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     @Override
     public void onCreate() {
         super.onCreate();
-        //createNotificationChannel();
-        //notificationContent = "Preparing";
+        createNotificationChannel();
+        notificationContent = "Preparing";
         updateNotificationInfo();
     }
 
@@ -140,19 +140,19 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
         super.onDestroy();
     }
 
-//    private void createNotificationChannel() {
-//        if (SDK_INT >= Build.VERSION_CODES.O) {
-//            CharSequence name = "Background Service";
-//            String description = "Executing process in background";
-//
-//            int importance = NotificationManager.IMPORTANCE_LOW;
-//            NotificationChannel channel = new NotificationChannel("FOREGROUND_DEFAULT", name, importance);
-//            channel.setDescription(description);
-//
-//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//    }
+    private void createNotificationChannel() {
+        if (SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Background Service";
+            String description = "Executing process in background";
+
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("FOREGROUND_DEFAULT", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
     protected void updateNotificationInfo() {
         if (isForegroundService(this)) {
@@ -218,7 +218,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             dartCallback = new DartExecutor.DartCallback(getAssets(), FlutterInjector.instance().flutterLoader().findAppBundlePath(), callback);
             backgroundEngine.getDartExecutor().executeDartCallback(dartCallback);
         } catch (UnsatisfiedLinkError e) {
-            //notificationContent = "Error " +e.getMessage();
+            notificationContent = "Error " +e.getMessage();
             updateNotificationInfo();
 
             Log.w(TAG, "UnsatisfiedLinkError: After a reboot this may happen for a short period and it is ok to ignore then!" + e.getMessage());
@@ -241,12 +241,10 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
         try {
             if (method.equalsIgnoreCase("setNotificationInfo")) {
-
-
                 JSONObject arg = (JSONObject) call.arguments;
                 if (arg.has("title")) {
-                    //notificationTitle = arg.getString("title");
-                    //notificationContent = arg.getString("content");
+                    notificationTitle = arg.getString("title");
+                    notificationContent = arg.getString("content");
                     updateNotificationInfo();
                     result.success(true);
                     return;
