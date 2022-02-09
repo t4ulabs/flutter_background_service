@@ -115,7 +115,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
-        notificationContent = "Uploading videos";
+        notificationContent = "Téléchargements En Cours";
         updateNotificationInfo();
     }
 
