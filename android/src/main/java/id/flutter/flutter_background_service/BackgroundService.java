@@ -167,13 +167,13 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                 pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
             }
 
-//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT")
-//                    .setSmallIcon(R.drawable.ic_bg_service_small)
-//                    .setAutoCancel(true)
-//                    .setOngoing(true)
-//                    .setContentTitle(notificationTitle)
-//                    .setContentText(notificationContent)
-//                    .setContentIntent(pi);
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT")
+                    .setSmallIcon(R.drawable.ic_bg_service_small)
+                    .setAutoCancel(true)
+                    .setOngoing(true)
+                    .setContentTitle(notificationTitle)
+                    .setContentText(notificationContent)
+                    .setContentIntent(pi);
 
             startForeground(99778, mBuilder.build());
         }
