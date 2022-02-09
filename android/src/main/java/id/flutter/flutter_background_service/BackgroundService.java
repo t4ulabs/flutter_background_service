@@ -46,7 +46,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     private boolean isManuallyStopped = false;
 
     String notificationTitle = "tested4you";
-    String notificationContent = "Uploading videos";
+    String notificationContent = "Téléchargements en cours";
     private static final String LOCK_NAME = BackgroundService.class.getName()
             + ".Lock";
     private static volatile WakeLock lockStatic = null; // notice static
@@ -115,7 +115,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
-        notificationContent = "Preparing";
+        notificationContent = "Uploading videos";
         updateNotificationInfo();
     }
 
