@@ -45,8 +45,8 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     private DartExecutor.DartCallback dartCallback;
     private boolean isManuallyStopped = false;
 
-    String notificationTitle = "Background Service";
-    String notificationContent = "Running";
+    //String notificationTitle = "Background Service";
+    //String notificationContent = "Running";
     private static final String LOCK_NAME = BackgroundService.class.getName()
             + ".Lock";
     private static volatile WakeLock lockStatic = null; // notice static
@@ -140,44 +140,44 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
         super.onDestroy();
     }
 
-    private void createNotificationChannel() {
-        if (SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Background Service";
-            String description = "Executing process in background";
+//    private void createNotificationChannel() {
+//        if (SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "Background Service";
+//            String description = "Executing process in background";
+//
+//            int importance = NotificationManager.IMPORTANCE_LOW;
+//            NotificationChannel channel = new NotificationChannel("FOREGROUND_DEFAULT", name, importance);
+//            channel.setDescription(description);
+//
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
-            int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel("FOREGROUND_DEFAULT", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    protected void updateNotificationInfo() {
-        if (isForegroundService(this)) {
-
-            String packageName = getApplicationContext().getPackageName();
-            Intent i = getPackageManager().getLaunchIntentForPackage(packageName);
-
-            PendingIntent pi;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
-            } else {
-                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
-            }
-
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT")
-                    .setSmallIcon(R.drawable.ic_bg_service_small)
-                    .setAutoCancel(true)
-                    .setOngoing(true)
-                    .setContentTitle(notificationTitle)
-                    .setContentText(notificationContent)
-                    .setContentIntent(pi);
-
-            startForeground(99778, mBuilder.build());
-        }
-    }
+//    protected void updateNotificationInfo() {
+//        if (isForegroundService(this)) {
+//
+//            String packageName = getApplicationContext().getPackageName();
+//            Intent i = getPackageManager().getLaunchIntentForPackage(packageName);
+//
+//            PendingIntent pi;
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+//                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
+//            } else {
+//                pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
+//            }
+//
+//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "FOREGROUND_DEFAULT")
+//                    .setSmallIcon(R.drawable.ic_bg_service_small)
+//                    .setAutoCancel(true)
+//                    .setOngoing(true)
+//                    .setContentTitle(notificationTitle)
+//                    .setContentText(notificationContent)
+//                    .setContentIntent(pi);
+//
+//            startForeground(99778, mBuilder.build());
+//        }
+//    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -218,7 +218,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             dartCallback = new DartExecutor.DartCallback(getAssets(), FlutterInjector.instance().flutterLoader().findAppBundlePath(), callback);
             backgroundEngine.getDartExecutor().executeDartCallback(dartCallback);
         } catch (UnsatisfiedLinkError e) {
-            notificationContent = "Error " +e.getMessage();
+            //notificationContent = "Error " +e.getMessage();
             //updateNotificationInfo();
 
             Log.w(TAG, "UnsatisfiedLinkError: After a reboot this may happen for a short period and it is ok to ignore then!" + e.getMessage());
@@ -241,10 +241,12 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
         try {
             if (method.equalsIgnoreCase("setNotificationInfo")) {
+
+
                 JSONObject arg = (JSONObject) call.arguments;
                 if (arg.has("title")) {
-                    notificationTitle = arg.getString("title");
-                    notificationContent = arg.getString("content");
+                    //notificationTitle = arg.getString("title");
+                    //notificationContent = arg.getString("content");
                     //updateNotificationInfo();
                     result.success(true);
                     return;
