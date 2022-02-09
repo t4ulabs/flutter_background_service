@@ -170,6 +170,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             PendingIntent pi;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
                 pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
+                //notificationManager.cancel(99778);
             } else {
                 pi = PendingIntent.getActivity(BackgroundService.this, 99778, i, PendingIntent.FLAG_CANCEL_CURRENT);
             }
@@ -184,7 +185,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
             startForeground(99778, mBuilder.build());
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.cancelAll();
+            notificationManager.cancel(99778);
         }
     }
 
