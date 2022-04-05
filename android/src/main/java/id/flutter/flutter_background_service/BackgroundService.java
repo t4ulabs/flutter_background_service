@@ -201,6 +201,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             SharedPreferences pref = getSharedPreferences("id.flutter.background_service", MODE_PRIVATE);
             long callbackHandle = pref.getLong("callback_handle", 0);
 
+            FlutterInjector.instance().flutterLoader().startInitialization(getApplicationContext());
             FlutterInjector.instance().flutterLoader().ensureInitializationComplete(getApplicationContext(), null);
             FlutterCallbackInformation callback = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
             if (callback == null) {
