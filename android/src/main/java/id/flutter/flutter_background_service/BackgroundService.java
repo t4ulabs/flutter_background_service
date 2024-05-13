@@ -286,7 +286,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                 alarmManager.cancel(pi);
-                stopSelf(this.startId);
+                stopSelf();
                 result.success(true);
                 return;
             }
