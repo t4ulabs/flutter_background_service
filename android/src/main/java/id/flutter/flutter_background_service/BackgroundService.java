@@ -45,8 +45,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     private DartExecutor.DartCallback dartCallback;
     private boolean isManuallyStopped = false;
 
-    private int startId = -1;
-
     String notificationTitle = "tested4you";
     String notificationContent = "Téléchargements en cours";
     private static final String LOCK_NAME = BackgroundService.class.getName()
@@ -185,7 +183,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     public int onStartCommand(Intent intent, int flags, int startId) {
         setManuallyStopped(false);
         enqueue(this);
-        this.startId = startId;
         runService();
         getLock(getApplicationContext()).acquire();
 
@@ -289,10 +286,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                 alarmManager.cancel(pi);
-                System.out.println(">>> stopService on startId: "+ this.startId);
-                if(this.startId != -1) {
-                  stopSelf(this.startId);
-                }
+                stopSelf(this.startId);
                 result.success(true);
                 return;
             }
